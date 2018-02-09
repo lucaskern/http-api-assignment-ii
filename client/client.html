@@ -36,19 +36,44 @@
         console.log('received');
       }
     };
-    //function to send request
-    const requestUpdate = (e, form) => {
-        if (form.id == 'userForm') {
-            //grab url field 
-            const url = userForm.querySelector('#urlField').value;
-            //grab method selected
-            const method = userForm.querySelector('#methodSelect').value;
-        } else {
-            const url = "/addUsers";
+    const requestNewUser = (e, form) => {
+        const url = "/addUsers";
             const method = "POST";
             const age = form.querySelector("#ageField").value;
             const name = form.querySelector("#nameField").value;
-        }
+        
+        //create a new AJAX request (asynchronous)
+      const xhr = new XMLHttpRequest();
+      //setup connect using the selected method and url
+      xhr.open(method, url);
+        
+      //set accept header in request to application/json
+      //The accept header is a comma separated list of
+      //accepted response types in order of preference
+      //from first to last. You only need to send one
+      //but you can send many, separated by commas.
+      xhr.setRequestHeader('Accept', 'application/json');
+        
+      xhr.onload = () => handleResponse(xhr, true); 
+      }
+      
+      xhr.send({age: age, name: name})
+
+      //cancel browser's default action
+      e.preventDefault();
+      //return false to prevent page redirection from a form
+      return false;
+    };
+
+    //function to send request
+    const requestUpdate = (e, form) => {
+        
+        //grab url field 
+        const url = userForm.querySelector('#urlField').value;
+        //grab method selected
+        const method = userForm.querySelector('#methodSelect').value;
+        console.log(method);
+
       
       //create a new AJAX request (asynchronous)
       const xhr = new XMLHttpRequest();
@@ -65,22 +90,17 @@
       //if get request or head request
       if(method == 'get') {
         //set onload to parse request and get json message
-        xhr.onload = () => handleResponse(xhr, true);
-      } else if (method == 'post') {
-          xhr.onload = () => handleResponse(xhr, true);
+        xhr.onload = () => handleResponse(xhr, true); 
       } else {
         //set onload to check meta data and NOT message
         //There are no body responses in a head request
         xhr.onload = () => handleResponse(xhr, false);
       }
       
-      if (method == 'post') {
-          xhr.send({age: age, name: name})
-      } else {
-        //send ajax request
-        xhr.send();
-      }
-        
+
+      //send ajax request
+      xhr.send();
+
       //cancel browser's default action
       e.preventDefault();
       //return false to prevent page redirection from a form
@@ -98,7 +118,7 @@
         
     
         const nameForm = document.querySelector("#nameForm");
-        const addUser = (e) => requestUpdate(e, nameForm);
+        const addUser = (e) => requestNewUser(e, nameForm);
         nameForm.addEventListener('submit', addUser);
     };
     window.onload = init;
