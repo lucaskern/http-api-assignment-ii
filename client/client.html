@@ -29,18 +29,21 @@
       //if we are expecting a response body (not in a head request)
       if(parseResponse) {
         //parse the object and print it
-        const obj = JSON.parse(xhr.response);
+        const obj = JSON.parse(xhr.responseText);
+        const objStr = JSON.stringify(obj)
         console.dir(obj);
-          content.innerHTML += "</br>" + obj;
+          content.innerHTML += "</br>" + objStr;
       } else {
         console.log('received');
       }
     };
     const requestNewUser = (e, form) => {
+        //console.log("add new user using: " + form);
+        
         const url = "/addUsers";
-            const method = "POST";
-            const age = form.querySelector("#ageField").value;
-            const name = form.querySelector("#nameField").value;
+        const method = "POST";
+        const age = form.querySelector("#ageField").value;
+        const name = form.querySelector("#nameField").value;
         
         //create a new AJAX request (asynchronous)
       const xhr = new XMLHttpRequest();
@@ -52,12 +55,13 @@
       //accepted response types in order of preference
       //from first to last. You only need to send one
       //but you can send many, separated by commas.
-      xhr.setRequestHeader('Accept', 'application/json');
+      xhr.setRequestHeader("Content-Type", "application/json");
         
       xhr.onload = () => handleResponse(xhr, true); 
-      }
       
-      xhr.send({age: age, name: name})
+      xhr.send(JSON.stringify({age: age, name: name}));
+      
+      console.dir(xhr);
 
       //cancel browser's default action
       e.preventDefault();
@@ -97,7 +101,6 @@
         xhr.onload = () => handleResponse(xhr, false);
       }
       
-
       //send ajax request
       xhr.send();
 
